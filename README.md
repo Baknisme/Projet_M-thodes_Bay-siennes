@@ -6,6 +6,7 @@ form.
 Their most complex model is equivalent to expressing the log(odds-ratio) ψifor the table instratum i as
 
 logψi = α + β1 * yeari + β2 * (yeari2- 22) + bi
+
 bi ~ Normal(0, τ)
 
 They use a quasi-likelihood approximation of the full hypergeometric likelihood obtained byconditioning on the margins of the tables.
