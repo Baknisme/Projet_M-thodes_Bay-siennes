@@ -3,7 +3,7 @@
 Breslow and Clayton (1993) re-analyse 2 by 2 tables of cases (deaths from childhood cancer)and controls tabulated against maternal exposure to X-rays, one table for each of 120combinations of age (0-9) and birth year (1944-1964). The data may be arranged to the following
 form.
 
-Their most complex model is equivalent to expressing the log(odds-ratio) ψifor the table instratum i as
+Their most complex model is equivalent to expressing the log(odds-ratio) ψifor the table instratum "i" as
 
 logψi = α + β1 * yeari + β2 * (yeari2- 22) + bi
 
