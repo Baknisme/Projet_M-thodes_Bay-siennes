@@ -16,8 +16,8 @@ Assuming this model with independent vague priors for the µi's provides the cor
 
 Let's try to find these results with a gibbs sampler:
 
-        mean         sd         MC_error  val2.5pc   median     val97.5pc 
-alpha   0.579      0.062       0.001545   0.4587     0.5793     0.7037 
-beta1  -0.04557    0.01553     3.929E-4  -0.07688   -0.0457    -0.01586 
-beta2   0.007041   0.003084    8.953E-5   0.001018   0.007004   0.01314 
-sigma   0.09697    0.06011     0.005036   0.02419    0.08059    0.2457 
+             mean          sd          MC_error     val2.5pc     median       val97.5pc 
+    alpha   0.579        0.062         0.001545     0.4587       0.5793        0.7037 
+    beta1  -0.04557      0.01553       3.929E-4    -0.07688     -0.0457       -0.01586 
+    beta2   0.007041     0.003084      8.953E-5     0.001018     0.007004      0.01314 
+    sigma   0.09697      0.06011       0.005036     0.02419      0.08059       0.2457 
