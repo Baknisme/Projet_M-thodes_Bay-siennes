@@ -1,0 +1,13 @@
+Sachant que r0i ~ Binomial(p0i, n0i) et que r1i ~ Binomial(p1i, n1i), on calcule r0 et r1:
+
+def calcul_r0(mu,r,n,K):
+    r_0 = 0 
+    for i in range(K):
+        r_0 += r[i]*np.log(expit(mu[i]))+(n[i]-r[i])*np.log(1-expit(mu[i]))
+    return r_0
+
+def calcul_r1(mu,alpha,beta1,beta2,year,b,r,n,K):
+    r_1 = 0 
+    for i in range(K):
+        r_1 += r[i]*np.log(expit(mu[i]+ alpha + beta1 * year[i] + beta2*(year[i]**2-22)+b[i]))+(n[i]-r[i])*np.log(1-expit(mu[i]+ alpha + beta1 * year[i] + beta2*(year[i]**2-22)+b[i]))
+    return r_1
