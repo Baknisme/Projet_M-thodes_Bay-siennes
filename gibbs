@@ -1,0 +1,13 @@
+def gibbs(nchain, burnin, r0, n0, n1, r1, year, K, prop_sd, b, init, init_mu, init_b):
+    # Initialisation des chaînes pour les 4 paramètres et les variables mu et b
+    chain = np.zeros((nchain + 1, 4))
+    chain_b = np.zeros((nchain + 1, K))
+    chain_mu = np.zeros((nchain + 1, K))
+    
+    #Valeurs initiales 
+    chain[0,:] = init
+    chain_b[0,:] = init_b
+    chain_mu[0,:] = init_mu
+    
+    for iteration in range(nchain):
+    ...
