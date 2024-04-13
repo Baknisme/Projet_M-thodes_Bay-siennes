@@ -9,5 +9,42 @@ def gibbs(nchain, burnin, r0, n0, n1, r1, year, K, prop_sd, b, init, init_mu, in
     chain_b[0,:] = init_b
     chain_mu[0,:] = init_mu
     
-    for iteration in range(nchain):
-    ...
+    for i in range(nchain):
+        alpha, beta1, beta2, sigma_sq = chain[i, :]
+        b = chain_b[i, :]
+        mu = chain_mu[i, :]
+        
+        #Maj alpha
+        prop_alpha = np.random.normal(alpha, prop_sd[0])
+        top = calcul_r1(mu, prop_alpha, beta1, beta2, year, b, r1, n1, K) - (prop_alpha ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (alpha ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            alpha = prop_alpha
+        
+        chain[i + 1, 0] = alpha
+            
+        # Maj Beta1
+        prop_beta1 = np.random.normal(beta1,prop_sd[1])
+        top = calcul_r1(mu, alpha, prop_beta1, beta2, year, b, r1, n1, K) - (prop_beta1 ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (beta1 ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            beta1 = prop_beta1
+        
+        chain[i + 1,1] = beta1
+            
+        # Maj Beta2
+        
+        prop_beta2 = np.random.normal(beta2,prop_sd[2])
+        top = calcul_r1(mu, alpha, beta1, prop_beta2, year, b, r1, n1, K) - (prop_beta2 ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (beta2 ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            beta2 = prop_beta2
+        
+        chain[i + 1,2] = beta2
+
+        # Maj sigma_sq
+        # Maj mu
+        # Maj b
