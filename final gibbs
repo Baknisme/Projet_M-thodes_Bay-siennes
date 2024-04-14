@@ -1,0 +1,82 @@
+def gibbs(nchain, inf, r0, n0, n1, r1, year, K, prop_sd, b, init, init_mu, init_b):
+    # Initialisation des chaînes pour les 4 paramètres et les variables mu et b
+    chain = np.zeros((nchain + 1, 4))
+    chain_b = np.zeros((nchain + 1, K))
+    chain_mu = np.zeros((nchain + 1, K))
+    
+    #Valeurs initiales
+    chain[0,:] = init
+    chain_b[0,:] = init_b
+    chain_mu[0,:] = init_mu
+    
+    for i in range(nchain):
+        alpha, beta1, beta2, sigma_sq = chain[i, :]
+        b = chain_b[i, :]
+        mu = chain_mu[i, :]
+        
+        #Maj alpha
+        prop_alpha = np.random.normal(alpha, prop_sd[0])
+        top = calcul_r1(mu, prop_alpha, beta1, beta2, year, b, r1, n1, K) - (prop_alpha ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (alpha ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            alpha = prop_alpha
+        
+        chain[i + 1, 0] = alpha
+            
+        # Maj Beta1
+        prop_beta1 = np.random.normal(beta1,prop_sd[1])
+        top = calcul_r1(mu, alpha, prop_beta1, beta2, year, b, r1, n1, K) - (prop_beta1 ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (beta1 ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            beta1 = prop_beta1
+        
+        chain[i + 1,1] = beta1
+            
+        # Maj Beta2
+        
+        prop_beta2 = np.random.normal(beta2,prop_sd[2])
+        top = calcul_r1(mu, alpha, beta1, prop_beta2, year, b, r1, n1, K) - (prop_beta2 ** 2 / (2 * 1E6))
+        bottom = calcul_r1(mu, alpha, beta1, beta2, year, b, r1, n1, K) - (beta2 ** 2 / (2 * 1E6))
+        
+        if np.random.uniform() < np.exp(top - bottom):
+            beta2 = prop_beta2
+        
+        chain[i + 1,2] = beta2
+        
+        # Maj sigma_sq
+        a = 0.001 + 0.5 * K
+        b1 = 0.001 + 0.5 * (np.sum(b ** 2))
+        tau=np.random.gamma(shape =a, scale =b1 )
+        sigma_sq = 1 / np.sqrt(tau)
+        chain[i+1,3] = sigma_sq
+        
+        for j in range(K):
+            
+            # Maj mu
+            prop_mu = np.random.normal(mu[j],prop_sd[3])
+            top = -(prop_mu**2 / (2*1E6)) + r0[j]* np.log(expit(prop_mu)) + (n0[j]-r0[j])*np.log((1-expit(prop_mu)))+ r1[j]* np.log(expit(prop_mu+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j])) + (n1[j]-r1[j])*np.log((1-expit(prop_mu+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j])))
+            bottom = -(mu[j]**2 / (2*1E6)) + r0[j]* np.log(expit(mu[j])) + (n0[j]-r0[j])*np.log((1-expit(mu[j])))+ r1[j]* np.log(expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j])) + (n1[j]-r1[j])*np.log((1-expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j])))
+            
+            if np.random.uniform() < np.exp(top - bottom):
+                mu[j] = prop_mu
+
+        
+            # Maj b
+            
+            prop_b = np.random.normal(b[j],prop_sd[4])
+            top = -(prop_b**2 / (2*sigma_sq**2))+ r1[j]* np.log(expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+prop_b)) + (n1[j]-r1[j])*np.log(1-expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+prop_b))
+            bottom = -(b[j]**2 / (2*sigma_sq**2))+r1[j]*np.log(expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j])) + (n1[j]-r1[j])*np.log(1-expit(mu[j]+ alpha + beta1 * year[j] + beta2*(year[j]**2-22)+b[j]))
+            
+            if np.random.uniform() < np.exp(top - bottom):
+                b[j] = prop_b
+
+        chain_b[i+1,:] = b 
+        chain_mu[i+1,:] = mu
+
+    chain = chain[inf:,:]
+    chain_b = chain_b[inf:,:]
+    chain_mu = chain_mu[inf:,:]
+    
+    return chain,chain_b,chain_mu
